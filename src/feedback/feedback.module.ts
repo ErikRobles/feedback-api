@@ -1,4 +1,4 @@
-import { Module, MiddlewareConsumer } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { FeedbackService } from './feedback.service';
 import { FeedbackController } from './feedback.controller';
@@ -16,6 +16,9 @@ import { AuthMiddleware } from './auth.middleware';
 })
 export class FeedbackModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('feedback');
+    consumer
+      .apply(AuthMiddleware)
+      .exclude({ path: 'feedback', method: RequestMethod.GET })
+      .forRoutes('feedback');
   }
 }
