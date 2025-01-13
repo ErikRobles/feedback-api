@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { FeedbackService } from './feedback.service';
 import { FeedbackController } from './feedback.controller';
 import { Feedback, FeedbackSchema } from './schemas/feedback.shema';
-import { AuthMiddleware } from './auth.middleware';
+import { JwtMiddleware } from './auth/jwt.middleware';
 
 @Module({
   imports: [
@@ -17,8 +17,11 @@ import { AuthMiddleware } from './auth.middleware';
 export class FeedbackModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(AuthMiddleware)
-      .exclude({ path: 'feedback', method: RequestMethod.GET })
+      .apply(JwtMiddleware)
+      .exclude(
+        { path: 'feedback', method: RequestMethod.GET },
+        { path: 'feedback/verify-password', method: RequestMethod.POST },
+      )
       .forRoutes('feedback');
   }
 }

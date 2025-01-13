@@ -13,6 +13,7 @@ import {
 import { FeedbackService } from './feedback.service';
 import { Feedback } from './schemas/feedback.shema';
 import * as crypto from 'crypto';
+import * as jwt from 'jsonwebtoken';
 
 @Controller('feedback')
 export class FeedbackController {
@@ -70,22 +71,19 @@ export class FeedbackController {
   // Verify password for restricted operations
   @Post('verify-password')
   verifyPassword(@Body('password') password: string): { token: string } {
-    const hashedPassword = process.env.AUTH_PASSWORD_HASH;
-    const crypto = require('crypto');
-    const hashedInput = crypto
+    const hashedPassword = crypto
       .createHash('sha256')
       .update(password)
       .digest('hex');
 
-    if (hashedInput !== hashedPassword) {
+    if (hashedPassword !== process.env.AUTH_PASSWORD_HASH) {
       throw new HttpException('Invalid password', HttpStatus.UNAUTHORIZED);
     }
 
-    // Generate a simple token (in a real app, consider using JWTs)
-    const token = crypto
-      .createHash('sha256')
-      .update('authorized-user')
-      .digest('hex');
+    // Generate JWT token
+    const token = jwt.sign({ role: 'user' }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
     return { token };
   }
 }
