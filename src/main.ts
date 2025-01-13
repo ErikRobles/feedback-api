@@ -5,8 +5,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin:
-      'https://6784418a064c6d0008452513--blissful-turing-be15a5.netlify.app',
+    origin: [
+      'http://localhost:5173', // For local development
+      'https://6784418a064c6d0008452513--blissful-turing-be15a5.netlify.app', // For production
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
