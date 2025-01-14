@@ -19,21 +19,39 @@ import * as jwt from 'jsonwebtoken';
 export class FeedbackController {
   constructor(private readonly feedbackService: FeedbackService) {}
 
-  private validateToken(authorizationHeader: string): void {
-    const token = authorizationHeader?.split(' ')[1]; // Extract the token
-    const expectedToken = crypto
-      .createHash('sha256')
-      .update('authorized-user')
-      .digest('hex');
+  private validateToken(authorizationHeader?: string) {
+    // Typical "Bearer <token>" format
+    if (!authorizationHeader) {
+      throw new HttpException(
+        'Missing Authorization header',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    const token = authorizationHeader.split(' ')[1];
+    if (!token) {
+      throw new HttpException(
+        'Malformed Authorization header',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
 
-    if (token !== expectedToken) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    try {
+      // Will throw if invalid or expired
+      jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      throw new HttpException(
+        'Invalid or expired token',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
   // Fetch all feedback
   @Get()
-  async getAllFeedback(): Promise<Feedback[]> {
+  async getAllFeedback(@Req() req: Request /* fetch API's Request */) {
+    // Fetch API: use `.get('authorization')` instead of `.authorization`
+    const authHeader = req.headers.get('authorization');
+    this.validateToken(authHeader);
     return this.feedbackService.findAll();
   }
 
@@ -80,10 +98,11 @@ export class FeedbackController {
       throw new HttpException('Invalid password', HttpStatus.UNAUTHORIZED);
     }
 
-    // Generate JWT token
+    // If the password matches the hash, generate a JWT:
     const token = jwt.sign({ role: 'user' }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
+
     return { token };
   }
 }
