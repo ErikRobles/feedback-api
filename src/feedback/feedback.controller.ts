@@ -52,8 +52,7 @@ export class FeedbackController {
   // Fetch all feedback
   @Get()
   async getAllFeedback(@Req() req: Request /* fetch API's Request */) {
-    // Fetch API: use `.get('authorization')` instead of `.authorization`
-    const authHeader = req.headers.get('authorization');
+    const authHeader = req.headers['authorization'];
     this.validateToken(authHeader);
     return this.feedbackService.findAll();
   }
