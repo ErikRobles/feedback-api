@@ -22,6 +22,6 @@ dotenv.config();
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).forRoutes('feedback'); // Protect all feedback routes
+    // consumer.apply(JwtMiddleware).forRoutes('feedback');
   }
 }
