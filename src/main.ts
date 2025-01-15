@@ -7,7 +7,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:5173', // For local development
-      'https://6784418a064c6d0008452513--blissful-turing-be15a5.netlify.app', // Your Netlify domain
+      'https://6785cc75bfd351000813e69b--blissful-turing-be15a5.netlify.app', // Your Netlify domain
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Auth-Password'],

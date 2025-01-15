@@ -14,6 +14,9 @@ import { FeedbackService } from './feedback.service';
 import { Feedback } from './schemas/feedback.shema';
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Controller('feedback')
 export class FeedbackController {
@@ -89,6 +92,7 @@ export class FeedbackController {
   // Verify password for restricted operations
   @Post('verify-password')
   verifyPassword(@Body('password') password: string): { token: string } {
+    console.log('ENV HASH =>', process.env.AUTH_PASSWORD_HASH); // Debug
     const hashedPassword = crypto
       .createHash('sha256')
       .update(password)

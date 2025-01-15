@@ -4,12 +4,19 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { FeedbackModule } from './feedback/feedback.module';
 import { JwtMiddleware } from './feedback/auth/jwt.middleware';
+import { ConfigModule } from '@nestjs/config';
 
 import * as dotenv from 'dotenv';
 dotenv.config();
 
 @Module({
-  imports: [FeedbackModule, MongooseModule.forRoot(process.env.MONGO_URI)],
+  imports: [
+    FeedbackModule,
+    MongooseModule.forRoot(process.env.MONGO_URI),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
