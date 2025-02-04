@@ -16,12 +16,12 @@ import { JwtMiddleware } from './auth/jwt.middleware';
 })
 export class FeedbackModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(JwtMiddleware)
-      .exclude(
-        { path: 'feedback', method: RequestMethod.GET },
-        { path: 'feedback/verify-password', method: RequestMethod.POST },
-      )
-      .forRoutes('feedback');
+    // consumer
+    //   .apply(JwtMiddleware)
+    //   .exclude(
+    //     { path: 'feedback', method: RequestMethod.GET },
+    //     { path: 'feedback/verify-password', method: RequestMethod.POST },
+    //   )
+    //   .forRoutes('feedback');
   }
 }

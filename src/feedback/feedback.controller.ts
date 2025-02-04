@@ -91,7 +91,7 @@ export class FeedbackController {
   // Verify password for restricted operations
   @Post('verify-password')
   verifyPassword(@Body('password') password: string): { token: string } {
-    console.log('ENV HASH =>', process.env.AUTH_PASSWORD_HASH); // Debug
+    console.log('ENV HASH =>', process.env.AUTH_PASSWORD_HASH); 
     const hashedPassword = crypto
       .createHash('sha256')
       .update(password)
