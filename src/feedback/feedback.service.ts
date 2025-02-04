@@ -16,13 +16,17 @@ export class FeedbackService {
     return this.feedbackModel.find().exec();
   }
 
-  async create(createFeedbackDto: CreateFeedbackDto): Promise<Feedback> {
-    const createdFeedback = new this.feedbackModel({
-      ...createFeedbackDto,
-      _id: new mongoose.Types.ObjectId(), // ✅ Ensure a unique ID is assigned
-    });
+  async create(
+    createFeedbackDto: CreateFeedbackDto,
+  ): Promise<{ id: string; text: string; rating: number }> {
+    const createdFeedback = new this.feedbackModel(createFeedbackDto);
+    const savedFeedback = await createdFeedback.save();
 
-    return createdFeedback.save();
+    return {
+      id: savedFeedback._id.toString(),
+      text: savedFeedback.text,
+      rating: savedFeedback.rating,
+    };
   }
 
   async delete(id: string): Promise<Feedback> {
@@ -32,9 +36,19 @@ export class FeedbackService {
   async update(
     id: string,
     updateFeedbackDto: CreateFeedbackDto,
-  ): Promise<Feedback> {
-    return this.feedbackModel
+  ): Promise<{ id: string; text: string; rating: number }> {
+    const updatedFeedback = await this.feedbackModel
       .findByIdAndUpdate(id, updateFeedbackDto, { new: true })
       .exec();
+
+    if (!updatedFeedback) {
+      throw new Error('Feedback not found or failed to update');
+    }
+
+    return {
+      id: updatedFeedback._id.toString(),
+      text: updatedFeedback.text,
+      rating: updatedFeedback.rating,
+    };
   }
 }
