@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Feedback, FeedbackDocument } from './schemas/feedback.shema';
 import { CreateFeedbackDto } from './dto/feedback.dto';
+import * as mongoose from 'mongoose';
 
 @Injectable()
 export class FeedbackService {
@@ -16,7 +17,11 @@ export class FeedbackService {
   }
 
   async create(createFeedbackDto: CreateFeedbackDto): Promise<Feedback> {
-    const createdFeedback = new this.feedbackModel(createFeedbackDto);
+    const createdFeedback = new this.feedbackModel({
+      ...createFeedbackDto,
+      _id: new mongoose.Types.ObjectId(), // ✅ Ensure a unique ID is assigned
+    });
+
     return createdFeedback.save();
   }
 
