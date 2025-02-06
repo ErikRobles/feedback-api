@@ -16,27 +16,40 @@ export class FeedbackService {
     return this.feedbackModel.find().exec();
   }
 
-  async create(
-    createFeedbackDto: CreateFeedbackDto,
-  ): Promise<{ id: string; text: string; rating: number }> {
+  async create(createFeedbackDto: CreateFeedbackDto): Promise<Feedback> {
     const createdFeedback = new this.feedbackModel(createFeedbackDto);
     const savedFeedback = await createdFeedback.save();
 
-    return {
-      id: savedFeedback._id.toString(),
-      text: savedFeedback.text,
-      rating: savedFeedback.rating,
-    };
+    return savedFeedback.toObject();
   }
 
-  async delete(id: string): Promise<Feedback> {
-    return this.feedbackModel.findByIdAndDelete(id).exec();
+  async delete(id: string): Promise<Feedback | null> {
+    try {
+      console.log('🔍 Deleting from database with ID:', id);
+
+      // Convert `id` to ObjectId if needed (for MongoDB)
+      const objectId = new mongoose.Types.ObjectId(id);
+
+      const deletedFeedback =
+        await this.feedbackModel.findByIdAndDelete(objectId);
+
+      if (!deletedFeedback) {
+        console.error('❌ Feedback not found:', id);
+        return null;
+      }
+
+      console.log('✅ Deleted successfully:', deletedFeedback);
+      return deletedFeedback;
+    } catch (error) {
+      console.error('❌ Error deleting from MongoDB:', error);
+      throw error;
+    }
   }
 
   async update(
     id: string,
     updateFeedbackDto: CreateFeedbackDto,
-  ): Promise<{ id: string; text: string; rating: number }> {
+  ): Promise<Feedback> {
     const updatedFeedback = await this.feedbackModel
       .findByIdAndUpdate(id, updateFeedbackDto, { new: true })
       .exec();
@@ -45,10 +58,6 @@ export class FeedbackService {
       throw new Error('Feedback not found or failed to update');
     }
 
-    return {
-      id: updatedFeedback._id.toString(),
-      text: updatedFeedback.text,
-      rating: updatedFeedback.rating,
-    };
+    return updatedFeedback.toObject();
   }
 }

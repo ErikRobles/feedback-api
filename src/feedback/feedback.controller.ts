@@ -80,18 +80,32 @@ export class FeedbackController {
 
   // Delete feedback by ID
   @Delete(':id')
-  async deleteFeedback(
-    @Param('id') id: string,
-    @Req() req: any,
-  ): Promise<Feedback> {
-    this.validateToken(req.headers.authorization); // Validate token
-    return this.feedbackService.delete(id);
+  async deleteFeedback(@Param('id') id: string, @Req() req: any): Promise<any> {
+    console.log('🗑 Deleting feedback with ID:', id);
+
+    try {
+      const deletedFeedback = await this.feedbackService.delete(id);
+
+      if (!deletedFeedback) {
+        console.error('❌ Feedback not found in database:', id);
+        throw new HttpException('Feedback not found', HttpStatus.NOT_FOUND);
+      }
+
+      console.log('✅ Successfully deleted:', deletedFeedback);
+      return { message: 'Feedback deleted successfully' };
+    } catch (error) {
+      console.error('❌ Error in deleteFeedback:', error);
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // Verify password for restricted operations
   @Post('verify-password')
   verifyPassword(@Body('password') password: string): { token: string } {
-    console.log('ENV HASH =>', process.env.AUTH_PASSWORD_HASH); 
+    console.log('ENV HASH =>', process.env.AUTH_PASSWORD_HASH);
     const hashedPassword = crypto
       .createHash('sha256')
       .update(password)

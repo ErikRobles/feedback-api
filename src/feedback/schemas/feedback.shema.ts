@@ -5,11 +5,15 @@ export type FeedbackDocument = Feedback & Document;
 
 @Schema()
 export class Feedback {
-  @Prop({ required: true })
+  @Prop()
   text: string;
 
-  @Prop({ required: true })
+  @Prop()
   rating: number;
+
+  get id() {
+    return this['_id'].toString();
+  }
 }
 
 export const FeedbackSchema = SchemaFactory.createForClass(Feedback);
